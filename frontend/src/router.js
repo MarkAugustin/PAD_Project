@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import SignUpPage from "./components/authPage/SignUpPage.vue";
-import HomePage from "./components/homePage/HomePage.vue"
+import HomePage from "./components/homePage/HomePage.vue";
+import EventCRUDPage from "./components/eventCRUDPage/EventCRUDPage.vue";
 
 const routes = [
   {
@@ -10,7 +11,11 @@ const routes = [
   },
   {
     path: "/",
-    component: HomePage
+    component: HomePage,
+  },
+  {
+    path: "/EventForm",
+    component: EventCRUDPage,
   },
 ];
 

@@ -8,41 +8,9 @@
         locally and globally.
       </span>
     </div>
-
-    <div>
-      <h1>Create Event</h1>
-      <form @submit.prevent="createNewEvent">
-        <input v-model="eventName" placeholder="Event Name" />
-        <input v-model="eventDate" type="date" />
-        <button type="submit">Create</button>
-      </form>
-    </div>
   </div>
 </template>
 
-<script>
-import { createEvent } from "../../../../services/eventService";
-
-export default {
-  data() {
-    return {
-      eventName: "",
-      eventDate: "",
-    };
-  },
-  methods: {
-    async createNewEvent() {
-      const newEvent = {
-        name: this.eventName,
-        date: this.eventDate,
-      };
-      await createEvent(newEvent);
-      this.eventName = "";
-      this.eventDate = "";
-    },
-  },
-};
-</script>
 
 <style>
 .banner-container {
