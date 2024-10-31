@@ -21,9 +21,15 @@
           <span style="color: red">*</span>
         </span>
         <select v-model="eventInfo.eventCategory" class="crud-select" required>
-          <option value="a" selected disabled>-- Please select one --</option>
-          <option value="b">ф</option>
-          <option value="c">а</option>
+          <option value="---" selected disabled>-- Please select one --</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Educational & Business">Educational & Business</option>
+          <option value="Cultural & Arts">Cultural & Arts</option>
+          <option value="Sports & Fitness">Sports & Fitness</option>
+          <option value="Technology & Innovation">
+            Technology & Innovation
+          </option>
+          <option value="Travel & Adventure">Travel & Adventure</option>
         </select>
       </div>
       <span class="crud-theme">Date & Time</span>
@@ -90,18 +96,16 @@
         <div class="crud-data">
           <label class="crud-data-head" for="time-finish">
             End Time
-            <span style="color: red">*</span>
           </label>
           <input
             v-model="eventInfo.eventTimeFinish"
             type="time"
             id="time-finish"
             @input="checkTimeValidity"
-            required
           />
         </div>
       </div>
-      <span class="crud-theme">Location</span>
+      <span class="crud-theme">Location & Price</span>
       <div class="crud-block">
         <span class="crud-name">
           Where will your event take place?
@@ -111,6 +115,21 @@
           v-model="eventInfo.eventPlace"
           class="crud-input"
           placeholder="Choose a cool one!"
+          required
+        />
+      </div>
+      <div class="crud-block">
+        <span class="crud-name">
+          Price ($)
+          <span style="color: red">*</span>
+        </span>
+        <input
+          v-model="eventInfo.eventPrice"
+          class="crud-input"
+          type="number"
+          placeholder="100.00"
+          style="width: 50%"
+          min="0.00"
           required
         />
       </div>
@@ -125,9 +144,20 @@
           class="crud-input"
           type="file"
           accept="image/*"
-          required
+          :required="!isCheckboxChecked"
+          :disabled="isCheckboxChecked"
           ref="fileInput"
+          style="width: 370px"
         />
+        <input
+          v-if="receivedEventId"
+          type="checkbox"
+          id="file-checkbox"
+          v-model="isCheckboxChecked"
+        />
+        <label v-if="receivedEventId" for="file-chexbox" class="crud-radio"
+          >Keep the same picture</label
+        >
       </div>
       <span class="crud-theme">Additional Information</span>
       <div class="crud-block">
@@ -150,11 +180,17 @@
 </template>
 
 <script>
-import { createEvent } from "../../../services/eventService";
+import {
+  createEvent,
+  updateEvent,
+  getEventById,
+} from "../../../services/eventService";
+import router from "@/router";
 export default {
   data() {
     return {
       eventInfo: {
+        receivedEventId: null,
         eventName: "",
         eventCategory: "",
         eventDate: null,
@@ -162,9 +198,12 @@ export default {
         eventTimeStart: null,
         eventTimeFinish: null,
         eventPlace: "",
-        eventBanner: null,
+        eventImage: null,
         eventDescription: "",
+        eventPrice: 0,
       },
+      isCheckboxChecked: false,
+      oldEventImage: "",
     };
   },
   methods: {
@@ -192,14 +231,13 @@ export default {
       }`;
     },
     handleFileUpload(event) {
-      const file = event.target.files[0]; // Получаем первый выбранный файл
+      const file = event.target.files[0];
       if (file) {
-        this.eventInfo.eventBanner = file; // Сохраняем файл в объект
+        this.oldEventImage = this.eventInfo.eventImage;
+        this.eventInfo.eventImage = file;
       }
     },
-    async submitForm() {
-      const NewEvent = this.eventInfo;
-      await createEvent(NewEvent);
+    clearForm() {
       this.eventInfo.eventName = "";
       this.eventInfo.eventCategory = "";
       this.eventInfo.eventDate = null;
@@ -207,125 +245,69 @@ export default {
       this.eventInfo.eventTimeStart = null;
       this.eventInfo.eventTimeFinish = null;
       this.eventInfo.eventPlace = "";
-      this.eventInfo.eventBanner = null;
+      this.eventInfo.eventImage = null;
       this.eventInfo.eventDescription = "";
+      this.eventInfo.eventPrice = 0;
       const fileInput = this.$refs.fileInput;
       if (fileInput) {
         fileInput.value = "";
       }
     },
+    async submitForm() {
+      try {
+        const formData = new FormData();
+
+        if (this.eventInfo.eventImage) {
+          if (this.isCheckboxChecked) {
+            this.eventInfo.eventImage = this.oldEventImage;
+          }
+          formData.append("image", this.eventInfo.eventImage);
+        }
+
+        formData.append("eventName", this.eventInfo.eventName);
+        formData.append("eventCategory", this.eventInfo.eventCategory);
+        formData.append("eventDate", this.eventInfo.eventDate);
+        formData.append("eventType", this.eventInfo.eventType);
+        formData.append("eventTimeStart", this.eventInfo.eventTimeStart);
+        formData.append("eventTimeFinish", this.eventInfo.eventTimeFinish);
+        formData.append("eventPlace", this.eventInfo.eventPlace);
+        formData.append("eventDescription", this.eventInfo.eventDescription);
+        formData.append("eventPrice", this.eventInfo.eventPrice);
+
+        if (!this.receivedEventId) {
+          await createEvent(formData);
+          alert("Event created successfully!");
+        } else {
+          formData.append("id", this.receivedEventId);
+          await updateEvent(formData);
+          alert("Event edited successfully!");
+        }
+
+        this.clearForm();
+        router.push({name:"Home"})
+      } catch (error) {
+        console.error(
+          "Error creating event:",
+          error.response?.data || error.message
+        );
+        alert("Failed to create event. Please try again.");
+      }
+    },
+    async loadEventData() {
+      try {
+        const event = await getEventById(this.receivedEventId);
+        this.eventInfo = event;
+      } catch (error) {
+        console.error("Ошибка загрузки данных события:", error);
+      }
+    },
+  },
+  created() {
+    this.receivedEventId = this.$route.params.id;
+    if (this.receivedEventId) {
+      this.loadEventData();
+    }
   },
 };
 </script>
 
-<style>
-.crud-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-}
-.crud-form {
-  width: 1920px;
-  padding: 60px 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.crud-head {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 900;
-  font-size: 30px;
-  color: #2d2c3c;
-}
-.crud-theme {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 200;
-  font-size: 25px;
-  margin: 50px 0px 25px 185px;
-}
-.crud-block {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-}
-.crud-name {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  width: 165px;
-  padding: 10px;
-  font-size: 20px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 200;
-}
-.crud-input {
-  border-color: rgba(130, 130, 130, 0.7);
-  border-radius: 6px;
-  width: 792px;
-  height: 38px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 300;
-  padding: 0px 15px;
-  font-size: 18px;
-}
-.crud-input::placeholder {
-  color: rgba(130, 130, 130, 0.7);
-  font-family: "Montserrat", sans-serif;
-  font-weight: 200;
-  font-size: 18px;
-}
-.crud-select {
-  border-color: rgba(130, 130, 130, 0.7);
-  border-radius: 6px;
-  width: 825px;
-  height: 38px;
-  font-family: "Montserrat", sans-serif;
-  padding: 0px 11px;
-  font-weight: 300;
-  font-size: 18px;
-}
-.crud-radio {
-  font-size: 18px;
-  color: #2d2c3c;
-  font-family: "Montserrat", sans-serif;
-  margin-right: 40px;
-  margin-left: 5px;
-}
-.crud-data {
-  display: flex;
-  flex-direction: column;
-  height: 70px;
-  justify-content: space-around;
-  align-items: flex-start;
-  margin-left: 10px;
-  margin-right: 15px;
-}
-.crud-submit {
-  width: 220px;
-  height: 50px;
-  align-self: center;
-  margin-top: 30px;
-  background-color: #2b293d;
-  border-radius: 10px;
-  color: white;
-  font-family: "Montserrat", sans-serif;
-  font-size: 20px;
-}
-#date,
-#time-start,
-#time-finish {
-  width: 242px;
-  height: 38px;
-  border-radius: 6px;
-  border-color: rgba(130, 130, 130, 0.7);
-  font-size: 20px;
-  color: rgba(130, 130, 130, 0.7);
-  padding-left: 10px;
-}
-#textarea {
-  resize: none;
-  padding: 7px 15px;
-  height: 105px;
-}
-</style>

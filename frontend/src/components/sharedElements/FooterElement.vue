@@ -43,38 +43,3 @@
   </div>
 </template>
 
-<style>
-.footer-container {
-  width: 100%;
-  height: 482px;
-  background-color: #2b293d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.footer-menu {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  width: 1920px;
-}
-.footer-column {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-.footer-column-head {
-  color: white;
-  font-size: 24px;
-  margin-bottom: 15px;
-}
-.footer-column-element {
-  color: #a9a9a9;
-  font-size: 18px;
-  margin-top: 15px;
-}
-.footer-apps {
-    margin-top: 1em;
-}
-</style>

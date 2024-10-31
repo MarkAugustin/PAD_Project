@@ -1,13 +1,30 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api';  // Адрес вашего микросервиса
+const API_URL = "http://localhost:5000/api"; // Адрес микросервиса
 
 export const getAllEvents = async () => {
   try {
     const response = await axios.get(`${API_URL}/events`);
+    const events = response.data;
+
+    const eventsWithImages = events.map((event) => ({
+      ...event,
+      eventImage: event.eventImage ? event.eventImage : "",
+    }));
+
+    return eventsWithImages;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
+  }
+};
+
+export const getEventById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/events/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error("Ошибка получения события по id:", error);
     throw error;
   }
 };
@@ -17,16 +34,32 @@ export const createEvent = async (eventData) => {
     const response = await axios.post(`${API_URL}/events`, eventData);
     return response.data;
   } catch (error) {
-    console.error('Error creating event:', error);
+    console.error("Error creating event:", error);
     throw error;
   }
 };
 
-export const deleteEvent = async (eventId) => {
+export const deleteEvent = async (id) => {
   try {
-    await axios.delete(`${API_URL}/events/${eventId}`);
+    const response = await axios.delete(`${API_URL}/events/${id}`);
+    return response.data;
   } catch (error) {
-    console.error('Error deleting event:', error);
+    console.error("Error deleting event:", error);
+    throw error;
+  }
+};
+
+export const updateEvent = async (eventData) => {
+  try {
+    const response = await axios({
+      method: 'PUT',
+      url: `${API_URL}/events/${eventData.get("id")}`,
+      data: eventData,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating event:", error);
     throw error;
   }
 };

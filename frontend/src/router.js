@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import SignUpPage from "./components/authPage/SignUpPage.vue";
 import HomePage from "./components/homePage/HomePage.vue";
 import EventCRUDPage from "./components/eventCRUDPage/EventCRUDPage.vue";
+import LogInPage from "./components/authPage/LogInPage.vue";
 
 const routes = [
   {
@@ -11,11 +12,23 @@ const routes = [
   },
   {
     path: "/",
+    name: "Home",
     component: HomePage,
   },
   {
-    path: "/EventForm",
+    path: "/EventForm/:id?",
+    name: "EventForm",
     component: EventCRUDPage,
+  },
+  {
+    path: "/SignUp",
+    name: "SignUp",
+    component: SignUpPage,
+  },
+  {
+    path: "/LogIn",
+    name: "LogIn",
+    component: LogInPage,
   },
 ];
 

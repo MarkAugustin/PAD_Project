@@ -30,37 +30,3 @@
   </div>
 </template>
 
-
-<style>
-.categories-container {
-  width: 94%;
-  padding: 45px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.categories-head {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 900;
-  font-size: 30px;
-}
-.categories-categories {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-.categories-category {
-  width: 235px;
-  height: 235px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-}
-.category-name {
-  color: #2d2c3c;
-  font-size: 20px;
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300; /* SemiBold */
-}
-</style>

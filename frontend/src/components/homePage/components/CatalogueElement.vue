@@ -3,8 +3,19 @@
     <span class="catalogue-head"> Popular Events </span>
     <div class="catalogue-grid">
       <b-row class="grid-row">
-        <b-col cols="3" v-for="event in events" :key="event.id">
-          <event-card></event-card>
+        <b-col cols="4" v-for="event in events" :key="event.id">
+          <event-card
+            :eventID="event.id"
+            :eventName="event.eventName"
+            :eventPlace="event.eventPlace"
+            :eventTimeStart="event.eventTimeStart"
+            :eventTimeFinish="event.eventTimeFinish"
+            :eventPrice="event.eventPrice"
+            :eventDate="event.eventDate"
+            :eventImage="event.eventImage"
+            @delete="removeEvent"
+            @edit="editEvent"
+          ></event-card>
         </b-col>
       </b-row>
     </div>
@@ -12,6 +23,7 @@
 </template>
 
 <script>
+import { getAllEvents, deleteEvent } from "../../../../services/eventService";
 import EventCard from "./EventCardElement.vue";
 export default {
   components: {
@@ -19,47 +31,36 @@ export default {
   },
   data() {
     return {
-      events: [
-        {
-          id: 1,
-          name: "Camping",
-          date: "02.10.24",
-        },
-        {
-          id: 2,
-          name: "Camping",
-          date: "02.10.24",
-        },
-        {
-          id: 3,
-          name: "Camping",
-          date: "02.10.24",
-        },
-      ],
+      events: [],
     };
+  },
+  methods: {
+    async fetchEvents() {
+      try {
+        const eventsData = await getAllEvents();
+        this.events = eventsData;
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    },
+    async removeEvent(id) {
+      try {
+        await deleteEvent(id);
+        this.events = this.events.filter((event) => event.id !== id);
+      } catch (error) {
+        console.error("Failed to delete event:", error);
+      }
+    },
+    async editEvent(id) {
+      this.$router.push({
+        name: "EventForm",
+        params: { id: id },
+      });
+    },
+  },
+  mounted() {
+    this.fetchEvents();
   },
 };
 </script>
 
-<style>
-.catalogue-container {
-  padding: 10px 45px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-}
-.catalogue-head {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 900;
-  font-size: 30px;
-}
-.catalogue-grid {
-  width: 100%;
-}
-.grid-row {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-around;
-}
-</style>
