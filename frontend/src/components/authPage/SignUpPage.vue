@@ -59,3 +59,55 @@
   </div>
 </template>
 
+<script>
+import { registerUser } from "../../../services/authService.js";
+import router from "@/router.js";
+
+export default {
+  data() {
+    return {
+      registrationData: {
+        name: "",
+        email: "",
+        password: "",
+      },
+    };
+  },
+  methods: {
+    validateEmail(email) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailPattern.test(email);
+    },
+    validatePassword(password) {
+      const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      return passwordPattern.test(password);
+    },
+    async register() {
+      if (
+        this.registrationData.name.length < 4 ||
+        this.registrationData.name.length > 12
+      ) {
+        alert("Wrong name format");
+        return;
+      }
+      if (!this.validateEmail(this.registrationData.email)) {
+        alert("Wrong email format");
+        return;
+      }
+      if (!this.validatePassword(this.registrationData.password)) {
+        alert(
+          "The password must be at least 8 characters and contain letters and numbers"
+        );
+        return;
+      }
+      try {
+        await registerUser(this.registrationData);
+        alert("Регистрация прошла успешно!");
+        router.push({ name: "LogIn" });
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+  },
+};
+</script>

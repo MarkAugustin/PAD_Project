@@ -3,6 +3,7 @@ node_modules
 /dist
 
 backend/config/serviceAccountKey.json
+auth/config/firebaseServiceAccount.json
 
 # local env files
 .env.local
