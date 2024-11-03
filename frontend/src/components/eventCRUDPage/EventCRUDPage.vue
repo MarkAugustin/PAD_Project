@@ -94,9 +94,7 @@
           />
         </div>
         <div class="crud-data">
-          <label class="crud-data-head" for="time-finish">
-            End Time
-          </label>
+          <label class="crud-data-head" for="time-finish"> End Time </label>
           <input
             v-model="eventInfo.eventTimeFinish"
             type="time"
@@ -186,6 +184,8 @@ import {
   getEventById,
 } from "../../../services/eventService";
 import router from "@/router";
+import store from "@/store";
+
 export default {
   data() {
     return {
@@ -284,7 +284,7 @@ export default {
         }
 
         this.clearForm();
-        router.push({name:"Home"})
+        router.push({ name: "Home" });
       } catch (error) {
         console.error(
           "Error creating event:",
@@ -308,6 +308,10 @@ export default {
       this.loadEventData();
     }
   },
+  beforeCreate() {
+    if (!store.state.isAuthentificated) {
+      this.$router.push("/login");
+    }
+  },
 };
 </script>
-

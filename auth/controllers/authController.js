@@ -7,10 +7,12 @@ const registerUser = async (req, res) => {
   try {
     const user = await admin.auth().getUserByEmail(email);
     if (user) {
-      return res.status(400).json({ error: "Пользователь с таким email уже существует" });
+      return res
+        .status(400)
+        .json({ error: "Пользователь с таким email уже существует" });
     }
   } catch (error) {
-    if (error.code !== 'auth/user-not-found') {
+    if (error.code !== "auth/user-not-found") {
       return res.status(500).json({ error: error.message });
     }
   }
@@ -31,4 +33,20 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+const verifyToken = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    res.status(200).json({
+      uid: decodedToken.uid,
+      name: decodedToken.name,
+      email: decodedToken.email,
+    });
+  } catch (error) {
+    console.error("Ошибка проверки токена:", error);
+    res.status(401).json({ error: "Недействительный токен" });
+  }
+};
+
+module.exports = { registerUser, verifyToken };

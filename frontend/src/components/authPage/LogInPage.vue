@@ -25,13 +25,14 @@
             Log in with Facebook
           </button>
         </div>
-        <form class="login-form">
+        <form class="login-form" @submit.prevent="login()">
           <label for="login-email" class="login-label">Email Address</label>
           <input
             id="login-email"
             placeholder="Enter your e-mail"
             class="login-input"
             required
+            v-model="this.email"
           />
           <label for="login-pass" class="login-label">Password</label>
           <input
@@ -40,6 +41,7 @@
             class="login-input"
             type="password"
             required
+            v-model="this.password"
           />
           <input type="submit" value="Login" class="login-submit" />
         </form>
@@ -52,3 +54,27 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        await this.$store.dispatch("login", {
+          email: this.email,
+          password: this.password,
+        });
+        alert("Авторизация прошла успешно!");
+        this.$router.push("/");
+      } catch (error) {
+        alert("Something wrong!");
+      }
+    },
+  },
+};
+</script>

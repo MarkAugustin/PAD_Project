@@ -25,13 +25,14 @@
             Sign up with Facebook
           </button>
         </div>
-        <form class="signup-form">
+        <form class="signup-form" @submit.prevent="register()">
           <label for="signup-name" class="signup-label">Full Name</label>
           <input
             id="signup-name"
             placeholder="Enter your full name"
             class="signup-input"
             required
+            v-model="this.registrationData.name"
           />
           <label for="signup-email" class="signup-label">Email Address</label>
           <input
@@ -39,6 +40,7 @@
             placeholder="Enter your e-mail"
             class="signup-input"
             required
+            v-model="this.registrationData.email"
           />
           <label for="signup-pass" class="signup-label">Password</label>
           <input
@@ -47,6 +49,7 @@
             class="signup-input"
             type="password"
             required
+            v-model="this.registrationData.password"
           />
           <input type="submit" value="Create Account" class="signup-submit" />
         </form>
