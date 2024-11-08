@@ -1,12 +1,14 @@
 import { createStore } from "vuex";
 import { loginUser, logoutUser } from "../../services/authService";
 import router from "@/router";
+import { checkSubscription } from "../../services/notifyService";
 
 const store = createStore({
   state() {
     return {
       isAuthentificated: false,
       userProfile: JSON.parse(localStorage.getItem("userProfile")) || {},
+      notify: JSON.parse(localStorage.getItem("notify")) || false,
     };
   },
   mutations: {
@@ -19,14 +21,25 @@ const store = createStore({
         localStorage.removeItem("userProfile");
       }
     },
+    toggleUserSubscription(state, isSubscribed) {
+      state.userProfile.isSubscribed = isSubscribed;
+      if (isSubscribed) {
+        localStorage.setItem("notify", JSON.stringify(isSubscribed));
+      } else {
+        localStorage.removeItem("notify");
+      }
+    },
   },
   actions: {
-    async login({ dispatch }, form) {
+    async login({ commit }, form) {
       try {
         const userInfo = await loginUser(form.email, form.password);
-        dispatch("fetchUserProfile", userInfo);
+        const notifyInfo = await checkSubscription(userInfo.email);
+        commit("setUserProfile", userInfo);
+        commit("toggleUserSubscription", notifyInfo);
+        console.log(notifyInfo);
       } catch (error) {
-        console.error("Error creating event:", error);
+        console.error("Error while loging in:", error);
         throw error;
       }
     },
@@ -37,13 +50,16 @@ const store = createStore({
     },
     initializeAuth({ commit }) {
       const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+      const notify = JSON.parse(localStorage.getItem("notify"));
       if (userProfile) {
         commit("setUserProfile", userProfile);
       }
+      if (notify) {
+        commit("toggleUserSubscription", notify);
+      }
     },
-    async fetchUserProfile({ commit }, user) {
-      commit("setUserProfile", user);
-      return;
+    toggleUserSubscription({ commit }, isSubscribed) {
+      commit("toggleUserSubscription", isSubscribed);
     },
   },
 });
