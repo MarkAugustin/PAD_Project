@@ -42,21 +42,17 @@ const createEvent = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
   try {
-    // Запрашиваем все документы из коллекции 'events'
     const eventsSnapshot = await db.collection('events').get();
 
-    // Проверяем, есть ли события в базе
     if (eventsSnapshot.empty) {
       return res.status(404).send({ message: 'No events found' });
     }
 
-    // Преобразуем документы в массив объектов
     const events = eventsSnapshot.docs.map(doc => ({
-      id: doc.id,  // Добавляем ID события
-      ...doc.data()  // Добавляем остальные данные события
+      id: doc.id,
+      ...doc.data() 
     }));
 
-    // Отправляем массив событий как ответ
     res.status(200).send(events);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -76,7 +72,7 @@ const getEventById = async (req, res) => {
 
     res.status(200).send({ id: doc.id, ...doc.data() });
   } catch (error) {
-    console.error("Ошибка получения события по id:", error);
+    console.error("Error receiving event by id:", error);
     res.status(500).send({ error: error.message });
   }
 };
@@ -124,9 +120,8 @@ const updateEvent = async (req, res) => {
 
 const deleteEvent = async (req, res) => {
   try {
-    const { id } = req.params; // Получаем ID события из параметров запроса
+    const { id } = req.params;
 
-    // Сначала получаем данные события
     const eventRef = db.collection('events').doc(id);
     const eventSnapshot = await eventRef.get();
 
@@ -136,14 +131,12 @@ const deleteEvent = async (req, res) => {
 
     const eventData = eventSnapshot.data();
     
-    // Удаляем изображение из Firebase Storage, если оно существует
     if (eventData.eventImage) {
       const fileName = `${id}`;
       const fileRef = bucket.file(fileName);
       await fileRef.delete();
     }
 
-    // Удаляем событие из Firestore
     await eventRef.delete();
 
     res.status(200).send({ message: 'Event deleted successfully' });

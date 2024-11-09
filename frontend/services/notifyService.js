@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const API_URL = "http://localhost:3000/api/notifications";
+const API_URL = process.env.VUE_APP_NOTIFY_API_URL;
 
 async function sendNotification(eventName, eventDesc) {
   try {
@@ -9,10 +9,9 @@ async function sendNotification(eventName, eventDesc) {
       eventDesc,
     });
 
-    console.log("Уведомления успешно отправлены:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Ошибка при отправке уведомлений:", error);
+    console.error("Error sending notifications:", error);
     throw error;
   }
 }
@@ -24,7 +23,7 @@ async function toggleSubscription(email) {
     });
     return response.data.message;
   } catch (error) {
-    console.error("Ошибка при подписке на уведомления:", error);
+    console.error("Error when toggling subscription to notifications:", error);
     throw error;
   }
 }
@@ -36,7 +35,7 @@ async function checkSubscription(email) {
     });
     return response.data.state;
   } catch (error) {
-    console.error("Ошибка при подписке на уведомления:", error);
+    console.error("Error:", error);
     throw error;
   }
 }

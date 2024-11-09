@@ -1,14 +1,14 @@
 const admin = require("firebase-admin");
 const serviceAccount = require("./firebaseServiceAccount.json");
+require("dotenv").config({ path: "../.env" });
 
 try {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    projectId: "pad-project-eb1af",
+    projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
   });
-  console.log("Firebase Admin SDK успешно инициализирован.");
 } catch (error) {
-  console.error("Ошибка при инициализации Firebase Admin SDK:", error);
+  console.error("Error Firebase Admin SDK:", error);
 }
 
 module.exports = admin;

@@ -2,14 +2,13 @@ const admin = require("../config/firebaseAdmin");
 
 const registerUser = async (req, res) => {
   const { email, password, name } = req.body;
-  console.log("Получены данные:", { email, password, name });
 
   try {
     const user = await admin.auth().getUserByEmail(email);
     if (user) {
       return res
         .status(400)
-        .json({ error: "Пользователь с таким email уже существует" });
+        .json({ error: "A user with this email already exists" });
     }
   } catch (error) {
     if (error.code !== "auth/user-not-found") {
@@ -25,7 +24,7 @@ const registerUser = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Пользователь успешно зарегистрирован",
+      message: "User successfully registered",
       userId: userRecord.uid,
     });
   } catch (error) {
@@ -44,8 +43,8 @@ const verifyToken = async (req, res) => {
       email: decodedToken.email,
     });
   } catch (error) {
-    console.error("Ошибка проверки токена:", error);
-    res.status(401).json({ error: "Недействительный токен" });
+    console.error("Token verification error:", error);
+    res.status(401).json({ error: "Invalid token" });
   }
 };
 

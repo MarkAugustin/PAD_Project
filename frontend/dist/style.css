@@ -251,14 +251,11 @@
   font-weight: 300;
   font-size: 18px;
 }
-#notify-checkbox {
-  margin-right: 10px;
-}
 .crud-radio {
   font-size: 18px;
   color: #2d2c3c;
   font-family: "Montserrat", sans-serif;
-  margin-right: 5px;
+  margin-right: 40px;
   margin-left: 5px;
 }
 .crud-data {
@@ -270,35 +267,16 @@
   margin-left: 10px;
   margin-right: 15px;
 }
-.crud-btns {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  margin-top: 30px;
-}
 .crud-submit {
   width: 220px;
   height: 50px;
   align-self: center;
+  margin-top: 30px;
   background-color: #2b293d;
   border-radius: 10px;
   color: white;
   font-family: "Montserrat", sans-serif;
   font-size: 20px;
-}
-.crud-cancel {
-  width: 220px;
-  height: 50px;
-  align-self: center;
-  background-color: #00000000;
-  border-radius: 10px;
-  border-color: #636363;
-  color: #636363;
-  font-family: "Montserrat", sans-serif;
-  font-size: 20px;
-  margin-right: 10px;
-  margin-left: 10px;
 }
 #date,
 #time-start,

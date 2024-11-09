@@ -105,7 +105,7 @@ export default {
       }
       try {
         await registerUser(this.registrationData);
-        alert("Регистрация прошла успешно!");
+        alert("Registration was successful!");
         router.push({ name: "LogIn" });
       } catch (error) {
         alert(error.message);

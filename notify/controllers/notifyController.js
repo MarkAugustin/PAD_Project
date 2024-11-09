@@ -18,9 +18,11 @@ const sendNotification = async (req, res) => {
     const mailOptions = {
       from: "7circleofhell@gmail.com",
       to: subscribers.join(","),
-      subject: `Eventify. Новое мероприятие: ${eventName}`,
-      text: `Привет! У нас есть новое мероприятие: ${eventName}. \nПодробнее: \n${eventDesc}`,
+      subject: `Eventify. New event: ${eventName}`,
+      text: `Hello! We have a new event for you: ${eventName}. \nMore details:\n${eventDesc}`,
     };
+
+    console.log(mailOptions)
 
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: "Emails sent successfully!" });

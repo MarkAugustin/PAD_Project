@@ -142,20 +142,25 @@
           class="crud-input"
           type="file"
           accept="image/*"
-          :required="!isCheckboxChecked"
-          :disabled="isCheckboxChecked"
+          :required="!isFileCheckboxChecked"
+          :disabled="isFileCheckboxChecked"
           ref="fileInput"
           style="width: 370px"
+        />
+        <img
+          :src="eventInfo.eventImage"
+          width="200"
+          style="margin-right: 10px; border-radius: 10px"
         />
         <input
           v-if="receivedEventId"
           type="checkbox"
           id="file-checkbox"
-          v-model="isCheckboxChecked"
+          v-model="isFileCheckboxChecked"
         />
-        <label v-if="receivedEventId" for="file-chexbox" class="crud-radio"
-          >Keep the same picture</label
-        >
+        <label v-if="receivedEventId" for="file-chexbox" class="crud-radio">
+          Keep the same picture
+        </label>
       </div>
       <span class="crud-theme">Additional Information</span>
       <div class="crud-block">
@@ -172,7 +177,20 @@
         >
         </textarea>
       </div>
-      <input type="submit" value="Save & Publish" class="crud-submit" />
+      <div class="crud-btns">
+        <label for="notify-chexbox" class="crud-radio">
+          Notify subscribers
+        </label>
+        <input
+          type="checkbox"
+          id="notify-checkbox"
+          v-model="isNotifyCheckboxChecked"
+        />
+        <router-link to="/" v-if="receivedEventId">
+          <button class="crud-cancel">Cancel</button>
+        </router-link>
+        <input type="submit" value="Save & Publish" class="crud-submit" />
+      </div>
     </form>
   </div>
 </template>
@@ -185,6 +203,7 @@ import {
 } from "../../../services/eventService";
 import router from "@/router";
 import store from "@/store";
+import { sendNotification } from "../../../services/notifyService";
 
 export default {
   data() {
@@ -202,7 +221,8 @@ export default {
         eventDescription: "",
         eventPrice: 0,
       },
-      isCheckboxChecked: false,
+      isFileCheckboxChecked: false,
+      isNotifyCheckboxChecked: false,
       oldEventImage: "",
     };
   },
@@ -276,13 +296,19 @@ export default {
 
         if (!this.receivedEventId) {
           await createEvent(formData);
+
           alert("Event created successfully!");
         } else {
           formData.append("id", this.receivedEventId);
           await updateEvent(formData);
           alert("Event edited successfully!");
         }
-
+        if (this.isNotifyCheckboxChecked) {
+          await sendNotification(
+            this.eventInfo.eventName,
+            this.eventInfo.eventDescription
+          );
+        }
         this.clearForm();
         router.push({ name: "Home" });
       } catch (error) {
@@ -298,13 +324,30 @@ export default {
         const event = await getEventById(this.receivedEventId);
         this.eventInfo = event;
       } catch (error) {
-        console.error("Ошибка загрузки данных события:", error);
+        console.error("Error loading event data:", error);
       }
+    },
+    saveToStorage(id) {
+      localStorage.setItem("savedId", id);
+    },
+    getIDFromStorage() {
+      return localStorage.getItem("savedId");
     },
   },
   created() {
     this.receivedEventId = this.$route.params.id;
+    this.eventLoadedImage = this.$route.params.image;
+  },
+  async mounted() {
+    if (!this.receivedEventId) {
+      try {
+        this.receivedEventId = this.getIdFromStorage();
+      } catch (e) {
+        this.$router.push("/EventForm");
+      }
+    }
     if (this.receivedEventId) {
+      this.saveToStorage(this.receivedEventId);
       this.loadEventData();
     }
   },

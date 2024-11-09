@@ -69,7 +69,7 @@ export default {
           email: this.email,
           password: this.password,
         });
-        alert("Авторизация прошла успешно!");
+        alert("Authorization was successful!");
         this.$router.push("/");
       } catch (error) {
         alert("Something wrong!");

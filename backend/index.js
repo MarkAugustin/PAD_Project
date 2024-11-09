@@ -1,16 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const eventRoutes = require('./routes/eventRoutes'); // Роуты для событий
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const eventRoutes = require("./routes/eventRoutes");
+require("dotenv").config({ path: "../.env" });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Роуты для работы с событиями (включая загрузку изображения)
-app.use('/api/events', eventRoutes);
+app.use("/api/events", eventRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.CRUD_PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
