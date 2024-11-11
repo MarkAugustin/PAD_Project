@@ -13,16 +13,12 @@ const sendNotification = async (req, res) => {
     }
     const subscribers = snapshot.docs.map((doc) => doc.data().email);
 
-    console.log(subscribers);
-
     const mailOptions = {
       from: "7circleofhell@gmail.com",
       to: subscribers.join(","),
       subject: `Eventify. New event: ${eventName}`,
       text: `Hello! We have a new event for you: ${eventName}. \nMore details:\n${eventDesc}`,
     };
-
-    console.log(mailOptions)
 
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: "Emails sent successfully!" });
@@ -44,11 +40,9 @@ const toggleSubscription = async (req, res) => {
 
     if (doc.exists) {
       await subscribersCollection.doc(email).delete();
-      console.log(`Unsubscribed: ${email}`);
       res.status(200).json({ message: "Unsubscribed successfully" });
     } else {
       await subscribersCollection.doc(email).set({ email });
-      console.log(`Subscribed: ${email}`);
       res.status(200).json({ message: "Subscribed successfully" });
     }
   } catch (error) {
@@ -61,7 +55,6 @@ const toggleSubscription = async (req, res) => {
 
 const checkSubscription = async (req, res) => {
   const { email } = req.body;
-  console.log(email);
 
   if (!email) {
     return res.status(400).json({ error: "Email is required" });

@@ -4,7 +4,7 @@ node_modules
 
 .env
 
-backend/config/serviceAccountKey.json
+backend/config/firebaseServiceAccount.json
 auth/config/firebaseServiceAccount.json
 notify/config/firebaseServiceAccount.json
 
