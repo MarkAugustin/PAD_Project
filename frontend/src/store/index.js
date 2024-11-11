@@ -37,7 +37,6 @@ const store = createStore({
         const notifyInfo = await checkSubscription(userInfo.email);
         commit("setUserProfile", userInfo);
         commit("toggleUserSubscription", notifyInfo);
-        console.log(notifyInfo);
       } catch (error) {
         console.error("Error while loging in:", error);
         throw error;

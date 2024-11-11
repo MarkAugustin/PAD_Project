@@ -1,0 +1,51 @@
+services:
+  auth:
+    build:
+      context: ./auth
+      args:
+        PORT: ${AUTH_PORT}
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        PORT: ${CRUD_PORT}
+    ports:
+      - "${CRUD_PORT}:${CRUD_PORT}" 
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  notify:
+    build:
+      context: ./notify
+      args:
+        PORT: ${NOTIFY_PORT}
+    ports:
+      - "${NOTIFY_PORT}:${NOTIFY_PORT}"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+
+networks:
+  app-network:
+    driver: bridge

@@ -22,7 +22,6 @@ export async function loginUser(email, password) {
       email,
       password
     );
-    console.log(userCredential);
 
     const token = await userCredential.user.getIdToken();
     const response = await axios.post(`${API_URL}/verify-token`, { token });

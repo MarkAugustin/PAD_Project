@@ -53,7 +53,7 @@ export const updateEvent = async (eventData) => {
   try {
     const response = await axios({
       method: "PUT",
-      url: `${API_URL}/events/${eventData.get("id")}`,
+      url: `${API_URL}/${eventData.get("id")}`,
       data: eventData,
       headers: { "Content-Type": "multipart/form-data" },
     });
